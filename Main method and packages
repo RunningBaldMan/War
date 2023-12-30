@@ -19,7 +19,7 @@ public class GamePlayApp {
 	private Deck deck; 
 	
 
-	private List<String> nameList = List.of("Larry", "Moe", "Currly", "Shemp");
+	private List<String> nameList = List.of("Larry", "Moe", "Curly", "Shemp");
 	// create list  of names with dups
 	
 	private Set<String> playerName = new HashSet<>(nameList);
@@ -37,7 +37,7 @@ public class GamePlayApp {
 	private void run() {
 		choosePlayer(); 
 		cardShuffle(); 
-		deck(); 
+		createDeck(); 
 		dealCards();
 		play();
 		nameWinner(); 
@@ -68,14 +68,14 @@ public class GamePlayApp {
 	}
 
 	private void play() {
-		while(!player1.hasCards()) {
-			Card card1 = player1.flip();
-			Card card2 = player2.flip();
+		while(!player1.hasCards() && !player2.hasCards()) {
+			Object card1 = player1.flip();
+			Object card2 = player2.flip();
 			
-			if (card.getRank() > card2.getRank()) {
+			if (card2.getRank() > card1.getRank()) {
 				player1.incrementScore();
 			} 
-			else if (card2.getRank() > card1.getRank()) {
+			else if (card1.getRank() > card2.getRank()) {
 				player2.incrementScore();
 			}
 			else  {
@@ -97,7 +97,8 @@ public class GamePlayApp {
 		}
 	}
 
-	private void deck() {
+	@SuppressWarnings("unused")
+	private void createDeck() {
 		Collections.shuffle(this.deck);
 		
 	}
@@ -126,6 +127,7 @@ public class GamePlayApp {
 	}
 	                                    
 }
+ 
 
 
 
@@ -137,6 +139,7 @@ package Player;
 
 import war.Card;
 
+@SuppressWarnings("unused")
 public class Player {
 	
 	public class Card {
@@ -146,7 +149,7 @@ public class Player {
 	private String name;     
 	private Hand hand = new Hand();
 	@SuppressWarnings("unused")
-	private int score;
+	private int score = 0;
 
 	public Player(String name) {
 		this.name = name;
@@ -169,7 +172,7 @@ public class Player {
 		return !hand.isEmpty();
 	}
 
-	public Player.Card flip() {
+	public Object flip() {
 		return hand.remove();
 	}
 
@@ -183,6 +186,7 @@ public class Player {
 	}
 	
 }
+
 
 
 //////// Deck package
