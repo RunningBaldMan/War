@@ -7,26 +7,18 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import javax.smartcardio.Card;
-
-import Player.Deck;
-import Player.Player;
 
 public class GamePlayApp {
 	
-	private Player player1; 
-	private Player player2;
-	private Deck deck; 
+	private Player player1 = new Player("Larry"); 
+	private Player player2 = new Player("Moe");
+	Deck deck = new Deck(); 
+
 	
 
 	private List<String> nameList = List.of("Larry", "Moe", "Curly", "Shemp");
 	// create list  of names with dups
 	
-	private Set<String> playerName = new HashSet<>(nameList);
-	//Set to remove duplicates
-	
-	private Random random = new Random();
-	// Randomizes name 
 
 	public static void main(String[] args) {
 		new GamePlayApp().run();
@@ -35,7 +27,7 @@ public class GamePlayApp {
 	}
 
 	private void run() {
-		choosePlayer(); 
+ 
 		cardShuffle(); 
 		createDeck(); 
 		dealCards();
@@ -68,15 +60,21 @@ public class GamePlayApp {
 	}
 
 	private void play() {
-		while(!player1.hasCards() && !player2.hasCards()) {
-			Object card1 = player1.flip();
-			Object card2 = player2.flip();
-			
+		for(int i = 0; i < 26; i++) {
+		//while(player1.hasCards() && player2.hasCards()) {
+			Card card1 = player1.flip();
+			Card card2 = player2.flip();
+			System.out.println("round number " + (i+1));
+		System.out.println(player1 + " has " + card1.getValue() + " of " + card1.getName());	
+		System.out.println(player2 + " has " + card2.getValue() + " of " + card2.getName());	
+		
 			if (card2.getRank() > card1.getRank()) {
-				player1.incrementScore();
+				player2.incrementScore();
+				System.out.println(player2 + " wins this round.\n");
 			} 
 			else if (card1.getRank() > card2.getRank()) {
-				player2.incrementScore();
+				player1.incrementScore();
+				System.out.println(player1 + " wins this round.\n");
 			}
 			else  {
 				declareTie();
@@ -85,12 +83,12 @@ public class GamePlayApp {
 	}
 
 	private void declareTie() {
-		System.out.println(player1 + " and " + player2 + " need to learn how to play. Neither won the war");
+		System.out.println(player1 + " and " + player2 + " need to learn how to play. Neither won the war.\n");
 		
 	}
 
 	private void dealCards() {
-		while(!deck.isEmpty()) {
+		for(int i = 0; i < 26; i++) {
 		player1.draw(deck);
 		player2.draw(deck); 
 		
@@ -99,7 +97,7 @@ public class GamePlayApp {
 
 	@SuppressWarnings("unused")
 	private void createDeck() {
-		Collections.shuffle(this.deck);
+		deck.cardShuffle();
 		
 	}
 
@@ -109,45 +107,34 @@ public class GamePlayApp {
 		
 	}
 
-	private void choosePlayer() {
-		List<String> name = new ArrayList<>(playerName);
-		player1 = createPlayer(name); 
-		player2 = createPlayer(name);
-		
-		System.out.println("Player 1 is " + player1 + ", and is playing player 2: " + player2 + ".");
-				
-	}
 
-	private Player createPlayer(List<String> name2) {
-		int randomPosition = random.nextInt(name2.size());
-		String name = name2.get(randomPosition);
-		// Use .get method to get the position of the name
-		name2.remove(randomPosition);
-		return new Player(name);
-	}
+
+	
 	                                    
 }
  
 
 
 
-
 ///// Player package
 
 
-package Player;
+package war;
 
-import war.Card;
+import java.util.ArrayList;
+import java.util.List;
+
+
+
+
 
 @SuppressWarnings("unused")
 public class Player {
 	
-	public class Card {
 
-	}
 
 	private String name;     
-	private Hand hand = new Hand();
+	private List<Card> hand = new ArrayList<Card>();
 	@SuppressWarnings("unused")
 	private int score = 0;
 
@@ -160,20 +147,20 @@ public class Player {
 	}
 
 	public void draw(Deck deck) {
-		hand.add(deck.remove()); 
+		hand.add(deck.draw());
 		
 	}
 
-	public Hand getHand() {
+	public List<Card> getHand() {
 		return hand;
 	}
 
 	public boolean hasCards() {
-		return !hand.isEmpty();
+		return hand.isEmpty();
 	}
 
-	public Object flip() {
-		return hand.remove();
+	public Card flip() {
+		return hand.remove(0);
 	}
 
 	public void incrementScore() {
@@ -188,67 +175,105 @@ public class Player {
 }
 
 
-
 //////// Deck package
 
-package Player;
+package war;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+
+
 @SuppressWarnings("serial")
-public class Deck extends LinkedList<Card> {
-	private final List<String> value = List.of("2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace");
+public class Deck {
+	private List<Card> deck = new ArrayList<Card>();
+	private String[] value = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"};
 	
-	private final List<String> name = List.of("Hearts", "Diamonds", "Clubs", "Spades");
+	private final String[] name = {"Hearts", "Diamonds", "Clubs", "Spades"};
 	
 	public Deck() {
-		for(String values : value) {
-			for (int index = 0; index < value.size(); index++) {
-				int rank = index + 1;
-				String values1 = value.get(index); 
-				Card card = new Card(name, value, rank);
+		
+			for (String names : name) {
+				int count = 2;
+				for(String values : value) {
+				
+				
+				int rank = count;
+				
+				Card card = new Card(names, values, rank);
 			
-				this.add(card);
+				deck.add(card);
+				count++;
 			}
 		}
 		
+		
+		
 	}
+	
+	public void cardShuffle() {
+		Collections.shuffle(deck);
 	
 
 }
+	public Card draw() {
+		return deck.remove(0);
+	}
+
+
+}	
+
 
 
 ////////   Card package
 
-
-package Player; 
+package war;
 
 import java.util.List;
 
 public class Card {
 	
-
-
-	private List<String> name;
-	private List<String> value;
+	private String name;
+	private String value;
 	private int rank;
 
-
-	public Card(List<String> name, List<String> value, int rank) {
-		this.name = name;
-		this.value = value;
+	public Card(String name2, String values, int rank) {
+		this.name = name2;
+		this.value = values;
 		this.rank = rank; 
 	}
 	
-	
-	@Override
-	public String toString() {
-		return  value + " of " + name;
+	public String getName() {
+		return name;
 	}
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+	public String getValue() {
+		return value;
+	}
+
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+
+	public void setRank(int rank) {
+		this.rank = rank;
+	}
+
+
+
 	
 	public int getRank() {
 		return rank;
 	}
 	
 	}
+		
